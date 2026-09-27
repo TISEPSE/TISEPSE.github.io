@@ -72,7 +72,16 @@
       } catch (e) {
         return fail();
       }
-      if (!list || list.v !== 1 || typeof list.n !== 'string' || !Array.isArray(list.i)) return fail();
+      if (!list || list.v !== 1 || typeof list.n !== 'string' || !Array.isArray(list.i) || typeof list.e !== 'number') return fail();
+
+      // Les liens sont valables 7 jours (date d'expiration « e » en secondes, incluse dans le lien).
+      var expires = new Date(list.e * 1000);
+      if (Date.now() > expires.getTime()) {
+        return app.replaceChildren(
+          el('p', 'error', 'Ce lien a expiré : les listes partagées sont valables 7 jours. ' +
+            'Demande un nouveau lien à la personne qui te l’a envoyé.')
+        );
+      }
 
       var items = list.i.filter(function (s) { return typeof s === 'string' && s.trim(); }).slice(0, 200);
       document.title = list.n.slice(0, 60) + ' · FrigoMalin';
@@ -98,7 +107,8 @@
         ul,
         open,
         copy,
-        el('p', 'note', 'Avec FrigoMalin installé, la liste s’ajoute en un geste.')
+        el('p', 'note', 'Avec FrigoMalin installé, la liste s’ajoute en un geste.'),
+        el('p', 'note', 'Lien valable jusqu’au ' + expires.toLocaleDateString('fr-FR') + '.')
       );
     })();
   </script>
