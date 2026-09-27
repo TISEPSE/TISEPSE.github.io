@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Liste de courses · FrigoMalin</title>
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f0f4f9; --text: #1f1f1f; --muted: #444746;
+      --primary: #0b57d0; --on-primary: #ffffff; --outline: #c4c7c5;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #131314; --surface: #1e1f20; --text: #e3e3e3; --muted: #c4c7c5;
+        --primary: #a8c7fa; --on-primary: #062e6f; --outline: #444746;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: Roboto, "Segoe UI", system-ui, sans-serif;
+      display: flex; justify-content: center; padding: 32px 16px;
+    }
+    main { width: 100%; max-width: 420px; }
+    .brand { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+    h1 { font-size: 26px; font-weight: 400; margin: 0 0 4px; overflow-wrap: anywhere; }
+    .count { color: var(--muted); margin: 0 0 20px; }
+    ul { list-style: none; margin: 0 0 24px; padding: 16px; background: var(--surface); border-radius: 16px; }
+    li { padding: 8px 0 8px 28px; position: relative; overflow-wrap: anywhere; }
+    li::before {
+      content: ""; position: absolute; left: 0; top: 10px; width: 14px; height: 14px;
+      border: 2px solid var(--muted); border-radius: 3px;
+    }
+    .btn {
+      display: block; width: 100%; padding: 16px; border: 0; border-radius: 16px;
+      background: var(--primary); color: var(--on-primary); font: inherit; font-weight: 500;
+      text-align: center; text-decoration: none; cursor: pointer;
+    }
+    .btn.secondary { background: transparent; color: var(--primary); border: 1px solid var(--outline); margin-top: 8px; }
+    .note { color: var(--muted); font-size: 13px; text-align: center; margin-top: 20px; }
+    .error { color: var(--muted); text-align: center; margin-top: 30vh; }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <p class="error">Chargement…</p>
+  </main>
+  <script>
+    // La liste est encodée dans le lien lui-même (après le #) : rien n'est envoyé à un serveur.
+    (function () {
+      var app = document.getElementById('app');
+      var data = location.hash.slice(1);
+
+      function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text; // texte brut uniquement (aucun HTML injecté)
+        return node;
+      }
+
+      function fail() {
+        app.replaceChildren(el('p', 'error', 'Ce lien de liste de courses est invalide ou incomplet.'));
+      }
+
+      var list;
+      try {
+        var b64 = data.replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        var bytes = Uint8Array.from(atob(b64), function (c) { return c.charCodeAt(0); });
+        list = JSON.parse(new TextDecoder().decode(bytes));
+      } catch (e) {
+        return fail();
+      }
+      if (!list || list.v !== 1 || typeof list.n !== 'string' || !Array.isArray(list.i)) return fail();
+
+      var items = list.i.filter(function (s) { return typeof s === 'string' && s.trim(); }).slice(0, 200);
+      document.title = list.n.slice(0, 60) + ' · FrigoMalin';
+
+      var ul = el('ul');
+      items.forEach(function (name) { ul.appendChild(el('li', '', name.slice(0, 100))); });
+
+      // Ouvre FrigoMalin sur Android (intent), avec la liste en paramètre.
+      var open = el('a', 'btn', 'Ouvrir dans FrigoMalin');
+      open.href = 'intent://' + location.host + '/l/?d=' + encodeURIComponent(data) +
+        '#Intent;scheme=https;package=com.frigomalin.app;end';
+
+      var copy = el('button', 'btn secondary', 'Copier la liste');
+      copy.addEventListener('click', function () {
+        var text = list.n + '\n' + items.map(function (s) { return '• ' + s; }).join('\n');
+        navigator.clipboard.writeText(text).then(function () { copy.textContent = 'Liste copiée ✓'; });
+      });
+
+      app.replaceChildren(
+        el('div', 'brand', '🛒 Liste partagée avec FrigoMalin'),
+        el('h1', '', list.n.slice(0, 60)),
+        el('p', 'count', items.length + (items.length > 1 ? ' articles' : ' article')),
+        ul,
+        open,
+        copy,
+        el('p', 'note', 'Avec FrigoMalin installé, la liste s’ajoute en un geste.')
+      );
+    })();
+  </script>
+</body>
+</html>
