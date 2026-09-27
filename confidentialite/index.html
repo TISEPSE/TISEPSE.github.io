@@ -35,6 +35,7 @@
 <li>ton stock : nom des produits, catégorie, quantité, emplacement, date limite, et les informations de la fiche produit (marque, Nutri-Score, ingrédients) ;</li>
 <li>tes listes de courses ;</li>
 <li>l'historique des produits consommés ou jetés, les recettes cuisinées et tes recettes favorites, qui servent aux statistiques et aux badges ;</li>
+<li>si tu utilises l'assistant IA, l'historique de tes conversations (les 50 plus récentes) ;</li>
 <li>tes réglages : thème, notifications, préférences alimentaires.</li>
 </ul>
 <p>Ces données ne sont jamais envoyées à FrigoMalin ni à un tiers. Personne d'autre que toi n'y a accès.</p>
@@ -44,7 +45,7 @@
 <p>Toutes les connexions sont chiffrées (HTTPS).</p>
 <h2>Assistant IA (Google Gemini), facultatif</h2>
 <p>L'assistant n'est actif que si tu enregistres toi-même une clé API Google Gemini dans Compte &gt; Assistant IA. Ta clé est chiffrée sur ton téléphone (Android Keystore) et n'est envoyée qu'à Google.</p>
-<p>Quand tu écris à l'assistant, FrigoMalin envoie à Google Gemini (generativelanguage.googleapis.com) : ton message et les précédents messages de la conversation, ton pseudo, tes préférences alimentaires, la liste de ton stock (nom, marque, quantité, emplacement, date limite) et tes listes de courses. Ces informations servent uniquement à générer la réponse. La conversation n'est pas enregistrée par FrigoMalin : elle disparaît quand l'application est fermée.</p>
+<p>Quand tu écris à l'assistant, FrigoMalin envoie à Google Gemini (generativelanguage.googleapis.com) : ton message et les précédents messages de la conversation, ton pseudo, tes préférences alimentaires, la liste de ton stock (nom, marque, quantité, emplacement, date limite) et tes listes de courses. Ces informations servent uniquement à générer la réponse. Tes conversations sont enregistrées uniquement sur ton téléphone, pour que tu puisses les relire dans l'historique ; tu peux les supprimer une par une ou toutes à la fois depuis l'historique.</p>
 <p>Ces échanges sont traités par Google selon les conditions de l'API Gemini, liées à ta clé et à ton compte Google. Avec une clé gratuite, Google peut les utiliser pour améliorer ses services ; évite donc d'y écrire des informations personnelles. Tu peux désactiver l'assistant à tout moment avec « Supprimer la clé ».</p>
 <h2>Partage d'une liste de courses</h2>
 <p>Quand tu partages une liste, FrigoMalin crée un lien qui contient directement le nom de la liste et ses articles (encodés dans le lien lui-même). Aucune liste n'est enregistrée en ligne : c'est toi qui choisis à qui envoyer ce lien, et toute personne qui le reçoit peut lire la liste. Le lien est valable 7 jours : passé ce délai, l'application et la page refusent de l'ouvrir.</p>
@@ -65,7 +66,7 @@
 <h2>Durée de conservation et suppression</h2>
 <p>Tes données sont conservées sur ton téléphone tant que l'application est installée. Tu peux les supprimer à tout moment :</p>
 <ul>
-<li>avec « Tout effacer » dans Compte (stock, historique et listes de courses) ;</li>
+<li>avec « Tout effacer » dans Compte (stock, historique, listes de courses et conversations avec l'assistant) ;</li>
 <li>avec « Supprimer la clé » dans Compte &gt; Assistant IA (clé Gemini) ;</li>
 <li>en désinstallant l'application, ce qui supprime toutes ses données.</li>
 </ul>
