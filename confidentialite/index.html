@@ -26,6 +26,7 @@
 <li>Tes données restent sur ton téléphone.</li>
 <li>Aucune publicité, aucun outil de suivi, aucune revente de données.</li>
 <li>Seul le code-barres d'un produit scanné est envoyé à Open Food Facts pour retrouver sa fiche.</li>
+<li>L'assistant IA est facultatif : si tu l'actives avec ta propre clé Google Gemini, tes questions sont envoyées à Google.</li>
 </ul>
 <h2>Données enregistrées sur ton téléphone</h2>
 <p>L'application enregistre uniquement dans son espace de stockage privé, sur ton appareil :</p>
@@ -41,6 +42,10 @@
 <p>Quand tu scannes un produit, son code-barres est envoyé à Open Food Facts (openfoodfacts.org), une base de données collaborative et libre, pour récupérer le nom, la marque, le Nutri-Score, les ingrédients et la photo du produit. Aucune autre information n'est transmise : ni ton pseudo, ni ton stock, ni tes listes.</p>
 <p>Comme pour tout accès à un site internet, les serveurs d'Open Food Facts reçoivent techniquement l'adresse IP de ton téléphone au moment de la requête. Leur traitement est décrit dans leur propre politique de confidentialité, sur openfoodfacts.org.</p>
 <p>Toutes les connexions sont chiffrées (HTTPS).</p>
+<h2>Assistant IA (Google Gemini), facultatif</h2>
+<p>L'assistant n'est actif que si tu enregistres toi-même une clé API Google Gemini dans Compte &gt; Assistant IA. Ta clé est chiffrée sur ton téléphone (Android Keystore) et n'est envoyée qu'à Google.</p>
+<p>Quand tu écris à l'assistant, FrigoMalin envoie à Google Gemini (generativelanguage.googleapis.com) : ton message et les précédents messages de la conversation, ton pseudo, tes préférences alimentaires, la liste de ton stock (nom, marque, quantité, emplacement, date limite) et tes listes de courses. Ces informations servent uniquement à générer la réponse. La conversation n'est pas enregistrée par FrigoMalin : elle disparaît quand l'application est fermée.</p>
+<p>Ces échanges sont traités par Google selon les conditions de l'API Gemini, liées à ta clé et à ton compte Google. Avec une clé gratuite, Google peut les utiliser pour améliorer ses services ; évite donc d'y écrire des informations personnelles. Tu peux désactiver l'assistant à tout moment avec « Supprimer la clé ».</p>
 <h2>Partage d'une liste de courses</h2>
 <p>Quand tu partages une liste, FrigoMalin crée un lien qui contient directement le nom de la liste et ses articles (encodés dans le lien lui-même). Aucune liste n'est enregistrée en ligne : c'est toi qui choisis à qui envoyer ce lien, et toute personne qui le reçoit peut lire la liste.</p>
 <p>Le lien pointe vers tisepse.github.io, une page hébergée par GitHub Pages. La liste se trouve après le signe « # » du lien : cette partie n'est jamais envoyée au serveur. Si l'application n'est pas installée, la page affiche la liste dans le navigateur ; le bouton « Ouvrir dans FrigoMalin » transmet alors la liste à l'application sur le téléphone. Comme pour tout site, GitHub reçoit techniquement l'adresse IP de l'appareil qui ouvre la page.</p>
@@ -49,7 +54,7 @@
 <ul>
 <li>Caméra : uniquement pendant le scan, pour lire le code-barres. Aucune photo ni vidéo n'est enregistrée.</li>
 <li>Notifications : pour t'envoyer les rappels de péremption. Ces rappels sont préparés et affichés par ton téléphone lui-même, sans passer par internet. Tu peux les désactiver à tout moment dans Compte.</li>
-<li>Internet : uniquement pour interroger Open Food Facts lors d'un scan.</li>
+<li>Internet : pour interroger Open Food Facts lors d'un scan et, si tu l'as activé, pour l'assistant Gemini.</li>
 <li>Démarrage du téléphone : pour reprogrammer les rappels après un redémarrage.</li>
 <li>Vibration : pour de légers retours tactiles.</li>
 </ul>
@@ -61,6 +66,7 @@
 <p>Tes données sont conservées sur ton téléphone tant que l'application est installée. Tu peux les supprimer à tout moment :</p>
 <ul>
 <li>avec « Tout effacer » dans Compte (stock, historique et listes de courses) ;</li>
+<li>avec « Supprimer la clé » dans Compte &gt; Assistant IA (clé Gemini) ;</li>
 <li>en désinstallant l'application, ce qui supprime toutes ses données.</li>
 </ul>
 <h2>Tes droits</h2>
