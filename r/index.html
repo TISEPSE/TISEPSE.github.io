@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Recette · FrigoMalin</title>
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f0f4f9; --text: #1f1f1f; --muted: #444746;
+      --primary: #0b57d0; --on-primary: #ffffff; --outline: #c4c7c5;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #131314; --surface: #1e1f20; --text: #e3e3e3; --muted: #c4c7c5;
+        --primary: #a8c7fa; --on-primary: #062e6f; --outline: #444746;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: Roboto, "Segoe UI", system-ui, sans-serif;
+      display: flex; justify-content: center; padding: 32px 16px;
+    }
+    main { width: 100%; max-width: 480px; }
+    .brand { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+    .emoji { font-size: 56px; line-height: 1; margin: 4px 0 8px; }
+    h1 { font-size: 26px; font-weight: 400; margin: 0 0 4px; overflow-wrap: anywhere; }
+    h2 { font-size: 15px; font-weight: 500; color: var(--primary); margin: 20px 0 8px; }
+    .meta { color: var(--muted); margin: 0 0 8px; }
+    ul, ol { margin: 0; padding: 16px 16px 16px 36px; background: var(--surface); border-radius: 16px; }
+    li { padding: 4px 0; overflow-wrap: anywhere; }
+    .amount { color: var(--muted); }
+    .btn {
+      display: block; width: 100%; padding: 16px; border: 0; border-radius: 16px; margin-top: 24px;
+      background: var(--primary); color: var(--on-primary); font: inherit; font-weight: 500;
+      text-align: center; text-decoration: none; cursor: pointer;
+    }
+    .btn.secondary { background: transparent; color: var(--primary); border: 1px solid var(--outline); margin-top: 8px; }
+    .note { color: var(--muted); font-size: 13px; text-align: center; margin-top: 20px; }
+    .error { color: var(--muted); text-align: center; margin-top: 30vh; }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <p class="error">Chargement…</p>
+  </main>
+  <script>
+    // La recette est encodée dans le lien lui-même (après le #) : rien n'est envoyé à un serveur.
+    (function () {
+      var app = document.getElementById('app');
+      var data = location.hash.slice(1);
+
+      function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text; // texte brut uniquement (aucun HTML injecté)
+        return node;
+      }
+      function str(v, max) { return (typeof v === 'string' ? v : '').replace(/\s+/g, ' ').trim().slice(0, max); }
+      function fail() { app.replaceChildren(el('p', 'error', 'Ce lien de recette est invalide ou incomplet.')); }
+
+      var payload;
+      try {
+        var b64 = data.replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        var bytes = Uint8Array.from(atob(b64), function (c) { return c.charCodeAt(0); });
+        payload = JSON.parse(new TextDecoder().decode(bytes));
+      } catch (e) {
+        return fail();
+      }
+      if (!payload || payload.v !== 1 || typeof payload.e !== 'number' || !payload.r || typeof payload.r !== 'object') return fail();
+      var r = payload.r;
+      var title = str(r.title, 60);
+      var ingredients = (Array.isArray(r.ingredients) ? r.ingredients : []).slice(0, 40)
+        .map(function (i) { return { n: str(i && i.n, 100), q: str(i && i.q, 40) }; })
+        .filter(function (i) { return i.n; });
+      var steps = (Array.isArray(r.steps) ? r.steps : []).slice(0, 30).map(function (s) { return str(s, 400); }).filter(Boolean);
+      if (!title || !ingredients.length) return fail();
+
+      // Les liens sont valables 7 jours (date d'expiration « e » en secondes, incluse dans le lien).
+      var expires = new Date(payload.e * 1000);
+      if (Date.now() > expires.getTime()) {
+        return app.replaceChildren(
+          el('p', 'error', 'Ce lien a expiré : les recettes partagées sont valables 7 jours. ' +
+            'Demande un nouveau lien à la personne qui te l’a envoyé.')
+        );
+      }
+
+      document.title = title + ' · FrigoMalin';
+      var minutes = Math.max(1, Math.min(1440, parseInt(r.minutes, 10) || 20));
+      var servings = Math.max(1, Math.min(50, parseInt(r.servings, 10) || 2));
+
+      var ul = el('ul');
+      ingredients.forEach(function (i) {
+        var li = el('li', '', i.n);
+        if (i.q) li.appendChild(el('span', 'amount', ' — ' + i.q));
+        ul.appendChild(li);
+      });
+      var ol = el('ol');
+      steps.forEach(function (s) { ol.appendChild(el('li', '', s)); });
+
+      // Ouvre FrigoMalin sur Android (intent), avec la recette en paramètre.
+      var open = el('a', 'btn', 'Ajouter dans FrigoMalin');
+      open.href = 'intent://' + location.host + '/r/?d=' + encodeURIComponent(data) +
+        '#Intent;scheme=https;package=com.tisepse.frigomalin;end';
+
+      var copy = el('button', 'btn secondary', 'Copier la recette');
+      copy.addEventListener('click', function () {
+        var text = title + ' (' + minutes + ' min, ' + servings + ' pers.)\n\nIngrédients :\n' +
+          ingredients.map(function (i) { return '• ' + i.n + (i.q ? ' — ' + i.q : ''); }).join('\n') +
+          (steps.length ? '\n\nPréparation :\n' + steps.map(function (s, n) { return (n + 1) + '. ' + s; }).join('\n') : '');
+        navigator.clipboard.writeText(text).then(function () { copy.textContent = 'Recette copiée ✓'; });
+      });
+
+      var children = [
+        el('div', 'brand', '🍳 Recette partagée avec FrigoMalin'),
+        el('div', 'emoji', str(r.emoji, 8) || '🍽️'),
+        el('h1', '', title),
+        el('p', 'meta', minutes + ' min · ' + servings + ' pers.'),
+        el('h2', '', 'Ingrédients'),
+        ul
+      ];
+      if (steps.length) children.push(el('h2', '', 'Préparation'), ol);
+      children.push(
+        open,
+        copy,
+        el('p', 'note', 'Avec FrigoMalin installé, la recette s’ajoute à tes recettes en un geste.'),
+        el('p', 'note', 'Lien valable jusqu’au ' + expires.toLocaleDateString('fr-FR') + '.')
+      );
+      app.replaceChildren.apply(app, children);
+    })();
+  </script>
+</body>
+</html>
