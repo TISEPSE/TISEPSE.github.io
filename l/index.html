@@ -92,7 +92,7 @@
       // Ouvre FrigoMalin sur Android (intent), avec la liste en paramètre.
       var open = el('a', 'btn', 'Ouvrir dans FrigoMalin');
       open.href = 'intent://' + location.host + '/l/?d=' + encodeURIComponent(data) +
-        '#Intent;scheme=https;package=com.frigomalin.app;end';
+        '#Intent;scheme=https;package=com.tisepse.frigomalin;end';
 
       var copy = el('button', 'btn secondary', 'Copier la liste');
       copy.addEventListener('click', function () {

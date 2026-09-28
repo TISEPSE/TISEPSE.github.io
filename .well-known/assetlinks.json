@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.frigomalin.app",
+      "package_name": "com.tisepse.frigomalin",
       "sha256_cert_fingerprints": [
         "76:B9:E7:EE:67:15:EB:4F:2E:5B:B5:28:98:47:BC:59:1B:B5:59:60:1A:07:0C:8E:9E:13:E9:FC:22:50:B5:65"
       ]
